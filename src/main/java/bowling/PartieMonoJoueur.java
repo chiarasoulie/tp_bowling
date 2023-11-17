@@ -1,16 +1,18 @@
 package bowling;
 
+import java.util.ArrayList;
+
 /**
  * Cette classe a pour but d'enregistrer le nombre de quilles abattues lors des
  * lancers successifs d'<b>un seul et même</b> joueur, et de calculer le score
  * final de ce joueur
  */
 public class PartieMonoJoueur {
-
-	/**
-	 * Constructeur
-	 */
+	private ArrayList<Tour> partie;
+	
+	
 	public PartieMonoJoueur() {
+		this.partie = new ArrayList<Tour>;
 	}
 
 	/**
@@ -38,7 +40,7 @@ public class PartieMonoJoueur {
 	 * @return vrai si la partie est terminée pour ce joueur, faux sinon
 	 */
 	public boolean estTerminee() {
-		throw new UnsupportedOperationException("Pas encore implémenté");
+		
 	}
 
 
