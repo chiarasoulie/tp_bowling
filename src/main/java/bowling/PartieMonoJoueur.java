@@ -54,6 +54,7 @@ public class PartieMonoJoueur {
 		}
 		return score;
 	}
+	// coucouc
 
 	/**
 	 * @return vrai si la partie est terminée pour ce joueur, faux sinon

@@ -3,6 +3,7 @@ package bowling;
 import java.util.ArrayList;
 
 public class Tour {
+	//coucou
 	private ArrayList<Lancer> lesLancers;
 	
 	private int boulelancee = 0;
