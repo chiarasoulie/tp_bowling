@@ -7,7 +7,7 @@ public class Lancer {
 		this.nbreQuillesTombees = nbreQuillesTombees;
 	}
 
-	public int getnbQuillesTombees() {
+	public int getnbreQuillesTombees() {
 		return nbreQuillesTombees;
 	}
 
