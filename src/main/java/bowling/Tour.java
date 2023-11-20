@@ -3,66 +3,69 @@ package bowling;
 import java.util.ArrayList;
 
 public class Tour {
-	//coucou
-	private ArrayList<Lancer> lesLancers;
-	
-	private int boulelancee = 0;
+	private int numTour;
+	private ArrayList<Lancer> lesLancers = new ArrayList<>();
+	private int numCoup = 1;
+	private boolean estFini = false;
 
-	public Tour(ArrayList<Lancer> lesLancers) {
-		this.lesLancers = lesLancers;
-		
-	}
-	public Tour() {
-		this.lesLancers = new ArrayList<Lancer>();
+	public Tour(int numTour) {
+		this.numTour = numTour;
 	}
 
-	public int scoreTour() {
+	public boolean estUnStrike() {
+		return lesLancers.size() == 1 && lesLancers.get(0).getNbreDeQuillesAbattues() == PartieMonoJoueur.nbreQuilles;
+	}
+
+	public boolean estUnSpare() {
+		return numCoup == 2 && getScoreLancer(1) + getScoreLancer(2) == PartieMonoJoueur.nbreQuilles && numTour != PartieMonoJoueur.nbreTours;
+	}
+
+	public boolean estFini() {
+		return estFini;
+	}
+
+	public int getScore() {
 		int score = 0;
-		for (Lancer l : lesLancers) {
-			score += l.getnbreQuillesTombees();
+		for (Lancer lancer : lesLancers) {
+			score += lancer.getNbreDeQuillesAbattues();
 		}
 		return score;
 	}
 
-	public Boolean estUnSpare() {
-		Boolean res = false;
-		if (scoreTour() == 10 && lesLancers.size() == 2)
-			res = true;
-		return res;
-	}
-
-	public Boolean estUnStrike() {
-		Boolean res = false;
-		if (scoreTour() == 10 && lesLancers.size() == 1)
-			res = true;
-		return res;
-	}
-
-	public ArrayList<Lancer> getLancer() {
-		return lesLancers;
-	}
-
-	public int nombreBoulesLancees() {
-		int b = 0;
-		if (this.estUnStrike()) {
-			b = 1;
-		} else if (lesLancers.size() == 1) {
-			b = 1;
+	public int getScoreLancer(int numLancer) {
+		if (numLancer >= 1 && numLancer <= lesLancers.size()) {
+			return lesLancers.get(numLancer - 1).getNbreDeQuillesAbattues();
 		} else {
-			b = 2;
-		}
-		return b;
-	}
-	public boolean estTerminée(){
-		if (estUnStrike() || nombreBoulesLancees() ==2){
-			return true;
-		}else{
-			return false;
+			return 0;
 		}
 	}
-	
-	public int nbLance(){
-		return lesLancers.size();
+
+	public int getProchainNumCoup() {
+		return numCoup;
 	}
-}
-	
+
+	public boolean enregistreLancer(Lancer lancer) {
+		if (numCoup == 1) {
+			lesLancers.add(lancer);
+			if (getScore() == PartieMonoJoueur.nbreQuilles && numTour != PartieMonoJoueur.nbreTours) {
+				estFini = true;
+			} else if (getScore() == PartieMonoJoueur.nbreQuilles) {
+				numCoup += 1;
+			} else {
+				numCoup++;
+			}
+		} else if (numCoup == 2) {
+			lesLancers.add(lancer);
+			estFini = true;
+			if (numTour == PartieMonoJoueur.nbreTours && !(getScore() < PartieMonoJoueur.nbreQuilles)) {
+				numCoup++;
+				estFini = false;
+			}
+		} else if (numCoup == 3) {
+			lesLancers.add(lancer);
+			estFini = true;
+		}
+
+		return !estFini;
+	}
+}	

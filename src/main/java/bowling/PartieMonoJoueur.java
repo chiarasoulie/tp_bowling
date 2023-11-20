@@ -8,116 +8,113 @@ import java.util.ArrayList;
  * final de ce joueur
  */
 public class PartieMonoJoueur {
-	private ArrayList<Tour> partie;
+	public static final int nbreTours = 10;
+	public static final int nbreQuilles = 10;
+	private int numTour = 1;
+	private ArrayList<Tour> laPartieMono = new ArrayList<>();
 
-
+	/**
+	 * Constructeur
+	 */
 	public PartieMonoJoueur() {
-		this.partie = new ArrayList<Tour>();
-		Tour tour1 = new Tour();
-		partie.add(tour1);
+		for (int i = 1; i <= nbreTours; i++) {
+			laPartieMono.add(new Tour(i));
+		}
 	}
+
+
 
 	/**
 	 * Cette méthode doit être appelée à chaque lancer de boule
 	 *
 	 * @param nombreDeQuillesAbattues le nombre de quilles abattues lors de ce lancer
-	 * @return vrai si le joueur doit lancer à nouveau pour continuer son tour, faux sinon
 	 * @throws IllegalStateException si la partie est terminée
+	 * @return vrai si le joueur doit lancer à nouveau pour continuer son tour, faux sinon	
 	 */
 	public boolean enregistreLancer(int nombreDeQuillesAbattues) {
-		if (estTerminee()) throw new IllegalStateException("la partie est fini !");
-		boolean b = false;
-		if (nombreDeQuillesAbattues == 10) {
-			b = false;
+		if (estTerminee()) throw new IllegalStateException("la partie est terminée !");
 
-		} else if (this.numeroProchainLancer() == 2) {
-			b = false;
+		Lancer lancer = new Lancer(nombreDeQuillesAbattues);
+		boolean continuerTour = laPartieMono.get(numTour - 1).enregistreLancer(lancer);
 
-		} else {
-			b = true;
+		if (!continuerTour) {
+			if (numTour < nbreTours) numTour++;
 		}
-		return b;
 
+		return continuerTour;
 	}
 
 	/**
 	 * Cette méthode donne le score du joueur.
 	 * Si la partie n'est pas terminée, on considère que les lancers restants
 	 * abattent 0 quille.
-	 *
 	 * @return Le score du joueur
 	 */
 	public int score() {
-		int score = 0;
-		for (Tour t : partie) {
-			score = score + t.scoreTour();
+		int scoreTotal = 0;
+
+		for (int i = 0; i < nbreTours - 1; i++) {
+			Tour tour = laPartieMono.get(i);
+			scoreTotal += tour.getScore();
+
+			if (tour.estUnSpare()) {
+				scoreTotal += laPartieMono.get(i + 1).getScoreLancer(1);
+			} else if (tour.estUnStrike()) {
+				if (i + 1 == nbreTours - 1 || !laPartieMono.get(i + 1).estUnStrike()) {
+					scoreTotal += laPartieMono.get(i + 1).getScore();
+				} else {
+					scoreTotal += laPartieMono.get(i + 1).getScoreLancer(1) + laPartieMono.get(i + 2).getScoreLancer(1);
+				}
+			}
 		}
-		return score;
+
+
+
+		Tour dernierTour = laPartieMono.get(nbreTours - 1);
+		scoreTotal += dernierTour.getScore();
+
+		if (scoreTotal>300){
+
+			scoreTotal=300;
+		}
+		return scoreTotal;
 	}
-	// coucouc
 
 	/**
 	 * @return vrai si la partie est terminée pour ce joueur, faux sinon
 	 */
 	public boolean estTerminee() {
-		boolean b = false;
-		if (partie.size() == 10) {
+		boolean b=false;
+		if(laPartieMono.get(nbreTours-1).estFini()) {
 			b = true;
 		}
 		return b;
 
-	}
 
+	}
 
 	/**
 	 * @return Le numéro du tour courant [1..10], ou 0 si le jeu est fini
 	 */
 	public int numeroTourCourant() {
-		int i = partie.size();
-		if (estTerminee())
-			i = 0;
-		return i;
-	}
-
-	public Tour tourCourant() {
-		return partie.get(partie.size() - 1);
+		if (estTerminee()) {
+			numTour = 0;
+		}
+		return numTour;
 	}
 
 	/**
 	 * @return Le numéro du prochain lancer pour tour courant [1..3], ou 0 si le jeu
-	 * est fini
+	 *         est fini
 	 */
-	public int numeroProchainLancer()
-	{
-		int numProchainLance = 0;
-		if (numeroTourCourant() == 0)
+	public int numeroProchainLancer() {
+		if (estTerminee()) {
 			return 0;
-
-		if (tourCourant().nbLance() == 0)
-			numProchainLance = 1;
-
-		if (numeroTourCourant() < 10) 
-		{
-			if (tourCourant().nbLance() == 1) 
-			{
-
-				if (tourCourant().estUnStrike()) 
-				{
-					numProchainLance = 1;
-				} else 
-				{
-					numProchainLance = 2;
-				}
-			} else if (tourCourant().nbLance() == 2) 
-			{
-				numProchainLance = 1;
-			}
+		} else if (numTour == nbreTours) {
+			return laPartieMono.get(nbreTours - 1).getProchainNumCoup();
+		} else {
+			return laPartieMono.get(numTour).getProchainNumCoup();
 		}
-		return numProchainLance;
-
-
 	}
-	
+
 }
-
-
